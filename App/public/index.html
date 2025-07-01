@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanIt</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PlanIt</h1>
+        
+        <!-- Create Calendar Section -->
+        <div class="section">
+            <h2>Create New Calendar</h2>
+            <form id="createCalendarForm" autocomplete="off">
+                <input type="text" id="calendarTitle" placeholder="Calendar Title" required>
+                <textarea id="calendarDescription" placeholder="Description (optional)"></textarea>
+                <button type="submit">Create Calendar</button>
+            </form>
+            <div id="calendarResult"></div>
+        </div>
+
+        <!-- View Calendar Section -->
+        <div class="section">
+            <h2>View Calendar</h2>
+            <form id="viewCalendarForm" autocomplete="off">
+                <input type="text" id="calendarId" placeholder="Enter Calendar ID" required>
+                <button type="submit">Load Calendar</button>
+            </form>
+        </div>
+
+        <!-- Calendar Display -->
+        <div id="calendarDisplay" class="section" style="display: none;">
+            <h3 id="calendarTitle"></h3>
+            <p id="calendarDescription"></p>
+            
+            <!-- Add Time Slots -->
+            <div class="add-slot">
+                <h4>Add Time Slot</h4>
+                <form id="addTimeSlotForm" autocomplete="off">
+                    <input type="datetime-local" id="startTime" required>
+                    <input type="datetime-local" id="endTime" required>
+                    <input type="number" id="maxParticipants" placeholder="Max Participants" value="1" min="1">
+                    <button type="submit">Add Time Slot</button>
+                </form>
+            </div>
+
+            <!-- Time Slots List -->
+            <div id="timeSlotsList"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
