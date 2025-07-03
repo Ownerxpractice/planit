@@ -1,4 +1,4 @@
-# Project Title
+# PlanIt
 
 PlanIt is a streamlined scheduling web application that helps small service-based businesses eliminate the inefficiencies of manual appointment coordination. Many independent professionals such as barbers, photographers, and tutors still rely on phone calls, emails, or paper calendars, resulting in double-bookings, time loss, and dissatisfied clients. PlanIt addresses this issue by providing a centralized, shareable booking calendar that empowers clients to self-schedule appointments.
 
