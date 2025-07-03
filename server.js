@@ -13,13 +13,12 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Database connection
+// Database connection
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'planit_calendar',
-  password: 'test1234',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
+
 
 // Initialize database tables
 async function initDatabase() {
