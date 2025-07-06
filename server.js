@@ -13,11 +13,23 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Database connection
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
+let pool;
+if (process.env.DATABASE_URL) {
+  // Production (e.g., Heroku)
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+} else {
+  // Local development
+  pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'planit_calendar',
+    password: 'test1234',
+    port: 5432,
+  });
+}
 
 
 // Initialize database tables
@@ -192,3 +204,5 @@ app.listen(PORT, async () => {
   await initDatabase();
   console.log(`Server running on http://localhost:${PORT}`);
 }); 
+
+module.exports = app; 
