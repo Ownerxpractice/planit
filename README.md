@@ -34,7 +34,7 @@ npm install
 
     1. Open pgAdmin4
     2. Create a new databse (e.g., planit_db)
-    3. Add credentials to server.js
+    3. Add credentials to app.js by editing the .env file
 
 4. Run the development server
 
@@ -46,37 +46,22 @@ npm run dev
 
 Open your browser and go to http://localhost:3000
 
-End with an example of getting some data out of the system or using it for a little demo
-
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+To run the automated tests
 ```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+npm test
 ```
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+This system is running on an AWS instance through AWS Educate.
 
 ## Built With
 
 * [PostgreSQL](https://www.postgresql.org/) - Database
 * [Express.js](https://expressjs.com/) - Backend Framework
-* [React.js](https://reactjs.org/) - Frontend Library
+* [EJS](https://ejs.co/) – Templating / View Engine 
 * [Node.js](https://nodejs.org/) - Server Environment
 
 ## Versioning
