@@ -369,5 +369,47 @@ app.post('/api/time-slots/:id/participants', async (req, res) => {
   }
 });
 
+// handle editing a time slot
+app.put('/api/time-slots/:id', async (req, res) => {
+  // get the id
+  const {id} = req.params;
+  // and get the other time slot info
+  const {startTime, endTime, maxParticipants} = req.body;
+  try {
+    // query for the time slot and update it's information 
+    const result = await db.query(
+      `UPDATE time_slots
+        Set start_time = $1
+        , end_time = $2
+        , max_participants = $3
+      WHERE id = $4
+      RETURNING *`,
+      [startTime, endTime, parseInt(maxParticipants) || 1, id]
+    );
+    // check if a response came back, otherwise give an error for time slot not found
+    if (result.rowCount === 0) return res.status(404).json({error: 'Time slot not found'});
+    // return the resulting slot to the user
+    return res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({error: err.message})
+  }
+});
+
+// handle deleting a time slot
+app.delete('/api/time-slots/:id', async (req, res) => {
+  // get the id for the time slot
+  const { id } = req.params;
+  try {
+    const result = await db.query(
+      'DELETE FROM time_slots WHERE id = $1 RETURNING *',
+      [id]
+    );
+    if (result.rowCount === 0) return res.status();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // export the express app and the database objects for the server
 module.exports = {app, initializeTables, db};
