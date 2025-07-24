@@ -1,4 +1,6 @@
 let currentCalendarId = null;
+// variables used for the modal timeslot editor
+let editModal, editForm;
 
 // clear all the forms and result messages
 function clearAllForms() {
@@ -128,6 +130,28 @@ async function loadDashboardSlots(calendarId) {
 
       // attach the badge to the list item
       li.appendChild(badge);
+
+      // use a div to place the edit and delete buttons inside of
+      // then move them to the right side
+      const actions = document.createElement('div')
+      actions.className = 'd-flex ms-auto'
+
+      // make the edit button and define its properties
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn btn-secondary btn-sm ms-3';
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => editSlot(slot);
+
+      // make the delete button and define its properties
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-danger btn-sm ms-2';
+      delBtn.textContent = 'Delete';
+      delBtn.onclick = () => deleteSlot(slot.id);
+
+      // place both buttons in the actions div
+      actions.append(editBtn, delBtn)
+      li.appendChild(actions)
+
     });
 
   } catch (err) {
@@ -192,3 +216,79 @@ document.addEventListener('DOMContentLoaded', () => {
   const addForm = document.getElementById('addTimeSlotForm');
   if (addForm) addForm.addEventListener('submit', handleAddSlot);
 });
+
+// use an event listener to start the boostrap modal
+document.addEventListener('DOMContentLoaded', () => {
+  // get the place to add the modal
+  const modalEl = document.getElementById('editSlotModal');
+  // use bootstrap to create the modal window
+  editModal = new bootstrap.Modal(modalEl);
+  // get the form for editing
+  editForm = document.getElementById('editSlotForm');
+  // use another event lister for the submit
+  editForm.addEventListener('submit', handleEditFormSubmit);
+});
+
+// make the function to handle editing a slot
+function editSlot(slot) {
+  // fill in the fields
+  document.getElementById('editSlotId').value = slot.id;
+  // strip the seconds off for start and end times
+  document.getElementById('editStartTime').value = slot.start_time.slice(0,16);
+  document.getElementById('editEndTime').value   = slot.end_time.slice(0,16);
+  document.getElementById('editMaxParticipants').value = slot.max_participants;
+  // show the modal
+  editModal.show();
+}
+
+// handle the save changes button event
+async function handleEditFormSubmit(event) {
+  // first prevent the default loading
+  event.preventDefault();
+
+  // get the id, start time, end time, and participants
+  const id = document.getElementById('editSlotId').value;
+  const startTime = document.getElementById('editStartTime').value;
+  const endTime = document.getElementById('editEndTime').value;
+  const maxParticipants = document.getElementById('editMaxParticipants').value;
+
+  try {
+    // try to use the api to make a put for the new information
+    const res = await fetch(`/api/time-slots/${id}`, {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({startTime, endTime, maxParticipants})
+    });
+    // if the response has an errro then throw a new error
+    if (!res.ok) throw new Error(await res.text());
+
+    // after using it die the modal window
+    editModal.hide();
+    // then load in all the slots
+    await loadDashboardSlots(currentCalendarId);
+  } catch (err) {
+    // if the error was thrown then diplay the message to the user
+    alert('Error updating slot: ' + err.message);
+  }
+}
+
+// make the function to delete a slot
+async function deleteSlot(slotId) {
+  // use a confirmation message to be sure the the user wants to delete the slot
+  // otherwise exit the routine
+  if (!confirm('Are you sure you want to delete this time slot?')) return;
+
+  // try to use the api to make a fetch for deleting the slot 
+  try {
+    const res = await fetch(`/api/time-slots/${slotId}`, {
+      method: 'DELETE',
+      credentials: 'same-origin'
+    });
+    // if an error occurs throw a new one and give the message back to the user
+    if (!res.ok) throw new Error(await res.text());
+    await loadDashboardSlots(currentCalendarId);
+  } catch (err) {
+    alert('Error deleting slot: ' + err.message);
+  }
+}
