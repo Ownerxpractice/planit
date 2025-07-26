@@ -110,15 +110,33 @@ async function loadDashboardSlots(calendarId) {
       // format the start and end times
       const start = new Date(slot.start_time).toLocaleString();
       const end = new Date(slot.end_time).toLocaleString();
-      li.textContent = `${start} – ${end}`;
+      // Create a container for the time and participant info
+      const timeContainer = document.createElement('div');
+      timeContainer.innerHTML = `${start} – ${end}`;
+      
+      // Add participant count badge 
+      const participantBadge = document.createElement('span');
+      participantBadge.className = 'badge bg-secondary';
+      participantBadge.textContent = `${slot.current_participants} / ${slot.max_participants}`;
+      timeContainer.appendChild(participantBadge);
+      
+      li.appendChild(timeContainer);
 
       // create a badge to indicate availability
       const badge = document.createElement('span');
+       // Calculate percentage filled
+      const percentageFilled = (slot.current_participants / slot.max_participants) * 100;
       // check if the slot still has room
       if (slot.current_participants < slot.max_participants) {
+        // check if 80% or more filled (yellow) or less than 80% (green)
+        if (percentageFilled >= 50) {
+        badge.className = 'badge bg-warning';
+        badge.textContent = 'Available (Alomost Full)';
+      } else {
         // if so then use a bootstrap badge to available
         badge.className = 'badge bg-success';
         badge.textContent = 'Available';
+      }
         availList.appendChild(li);
       } else {
         // otherwise the slot is full
