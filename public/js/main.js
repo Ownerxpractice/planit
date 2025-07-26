@@ -131,7 +131,7 @@ async function loadDashboardSlots(calendarId) {
         // check if 80% or more filled (yellow) or less than 80% (green)
         if (percentageFilled >= 50) {
         badge.className = 'badge bg-warning';
-        badge.textContent = 'Available (Alomost Full)';
+        badge.textContent = 'Available (Almost Full)';
       } else {
         // if so then use a bootstrap badge to available
         badge.className = 'badge bg-success';
