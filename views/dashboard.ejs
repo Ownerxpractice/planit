@@ -1,4 +1,4 @@
-<%- include('partials/header', {title: 'Dashboard'}) %>
+ <%- include('partials/header', {title: 'Dashboard'}) %>
 
   <div class="row mb-5">
     <div class="col-md-8 offset-md-2">
@@ -162,6 +162,24 @@
           </div>
         </div>
       </div>
+
+      <!-- interface to load the exsisting participants-->
+      <div id="participants-section" class="card mt-4">
+          <div class="card-body">
+              <h5 class="card-title">Booked Participants</h5>
+              <div id="participants-list" class="text-muted">
+                  <p>Select a calendar above to view its participants.</p>
+              </div>
+              <div id="loading-indicator" class="text-center text-info py-2" style="display:none;">
+                  Loading participants...
+              </div>
+              <div id="error-message" class="text-center text-danger py-2" style="display:none;">
+                  Failed to load participants. Please try again.
+              </div>
+          </div>
+      </div>
+
+
 
       <div class="text-end mt-4">
         <a href="/logout" class="btn btn-link">Log Out</a>

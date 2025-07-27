@@ -411,5 +411,42 @@ app.delete('/api/time-slots/:id', async (req, res) => {
   }
 });
 
-// export the express app and the database objects for the server
-module.exports = {app, initializeTables, db};
+// get the information from the participants
+app.get('/api/calendars/:calendarId/participants', async (req, res) => {
+    const { calendarId } = req.params;
+    console.log(`Fetching participants for calendar ID: ${calendarId}`);
+
+    try {
+        const result = await db.query(
+            `SELECT
+                p.name,
+                p.email,
+                ts.start_time,
+                ts.end_time,
+                ts.id AS time_slot_id
+            FROM
+                participants AS p
+            JOIN
+                time_slots AS ts ON p.time_slot_id = ts.id
+            WHERE
+                ts.calendar_id = $1
+            ORDER BY
+                ts.start_time, p.name;`,
+            [calendarId]
+        );
+
+        const participants = result.rows;
+
+        if (participants.length > 0) {
+            res.json(participants);
+        } else {
+            res.json([]); // Return empty array if no participants
+        }
+    } catch (error) {
+        console.error('Error fetching participants for calendar:', error);
+        res.status(500).json({ error: 'Failed to fetch participants' });
+    }
+});
+
+
+module.exports = { app, db, initializeTables };

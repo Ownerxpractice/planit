@@ -131,7 +131,7 @@ async function loadDashboardSlots(calendarId) {
         // check if 80% or more filled (yellow) or less than 80% (green)
         if (percentageFilled >= 50) {
         badge.className = 'badge bg-warning';
-        badge.textContent = 'Available (Alomost Full)';
+        badge.textContent = 'Available (Almost Full)';
       } else {
         // if so then use a bootstrap badge to available
         badge.className = 'badge bg-success';
@@ -309,4 +309,31 @@ async function deleteSlot(slotId) {
   } catch (err) {
     alert('Error deleting slot: ' + err.message);
   }
+}
+
+// Function to get participants' names and emails for a given calendar ID
+async function getParticipantsData(calendarId, calendarTitle) {
+    try {
+        const response = await fetch(`/api/calendars/${calendarId}/participants`);
+
+        const participants = await response.json();
+
+        if (participants.length === 0) {
+            console.log(`No participants found for "${calendarTitle}".`);
+            // return if empty
+            return []; 
+        } else {
+            console.log(`Participants for "${calendarTitle}":`);
+            participants.forEach(p => {
+                console.log(`  Name: ${p.name}, Email: ${p.email || 'Not provided'}`);
+            });
+            // Return the array of participant objects
+            return participants; 
+        }
+
+    // if the participants list is empty
+    } catch (error) {
+        console.error('Error fetching participants:', error);
+        return []; 
+    }
 }
