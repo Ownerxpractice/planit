@@ -6,12 +6,12 @@ describe('Edit/Delete Unit Tests', () => {
 
   describe('API Endpoint Tests', () => {
     
-    // Test calendar API endpoints that we saw in your existing tests
+    // Test calendar API
     test('GET /api/calendars - should handle calendar listing request', async () => {
       const response = await request(app)
         .get('/api/calendars');
       
-      // Don't expect specific status - just test the endpoint exists
+      // just test the endpoint exists
       expect([200, 401, 404, 500]).toContain(response.status);
     });
 
