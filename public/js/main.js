@@ -79,6 +79,7 @@ function handleCalendarChange(event) {
   // reveal the add slot panel and load its slots
   document.getElementById('calendarDetails').style.display = 'block';
   loadDashboardSlots(currentCalendarId);
+  getParticipants(currentCalendarId);
 }
 
 // load the time slots and split into available and booked
@@ -308,5 +309,47 @@ async function deleteSlot(slotId) {
     await loadDashboardSlots(currentCalendarId);
   } catch (err) {
     alert('Error deleting slot: ' + err.message);
+  }
+}
+
+// function to get participants' names and emails for a given calendar ID
+async function getParticipants(calendarId) {
+  const listEl = document.getElementById('participants-list');
+  const loadingEl = document.getElementById('loading-indicator');
+  const errorEl = document.getElementById('error-message');
+
+  // reset the states
+  listEl.innerHTML = '';
+  errorEl.style.display = 'none';
+  loadingEl.style.display = 'block';
+
+  try {
+    // access the participants through the api
+    const res = await fetch(`/api/calendars/${calendarId}/participants`, {
+      credentials: 'same-origin'
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const participants = await res.json();
+    loadingEl.style.display = 'none';
+
+    if (participants.length === 0) {
+      listEl.innerHTML = '<p class="text-muted">No one has signed up yet.</p>';
+    } else {
+      const ul = document.createElement('ul');
+      ul.className = 'list-group';
+      participants.forEach(p => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        // show the time, name, and email
+        li.textContent = 
+          `${new Date(p.start_time).toLocaleString()} – ${p.name}` +
+          (p.email ? ` (${p.email})` : '');
+        ul.appendChild(li);
+      });
+      listEl.appendChild(ul);
+    }
+  } catch (err) {
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'block';
   }
 }
