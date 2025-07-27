@@ -79,6 +79,7 @@ function handleCalendarChange(event) {
   // reveal the add slot panel and load its slots
   document.getElementById('calendarDetails').style.display = 'block';
   loadDashboardSlots(currentCalendarId);
+  getParticipants(currentCalendarId);
 }
 
 // load the time slots and split into available and booked
@@ -311,29 +312,44 @@ async function deleteSlot(slotId) {
   }
 }
 
-// Function to get participants' names and emails for a given calendar ID
-async function getParticipantsData(calendarId, calendarTitle) {
-    try {
-        const response = await fetch(`/api/calendars/${calendarId}/participants`);
+// function to get participants' names and emails for a given calendar ID
+async function getParticipants(calendarId) {
+  const listEl = document.getElementById('participants-list');
+  const loadingEl = document.getElementById('loading-indicator');
+  const errorEl = document.getElementById('error-message');
 
-        const participants = await response.json();
+  // reset the states
+  listEl.innerHTML = '';
+  errorEl.style.display = 'none';
+  loadingEl.style.display = 'block';
 
-        if (participants.length === 0) {
-            console.log(`No participants found for "${calendarTitle}".`);
-            // return if empty
-            return []; 
-        } else {
-            console.log(`Participants for "${calendarTitle}":`);
-            participants.forEach(p => {
-                console.log(`  Name: ${p.name}, Email: ${p.email || 'Not provided'}`);
-            });
-            // Return the array of participant objects
-            return participants; 
-        }
+  try {
+    // access the participants through the api
+    const res = await fetch(`/api/calendars/${calendarId}/participants`, {
+      credentials: 'same-origin'
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const participants = await res.json();
+    loadingEl.style.display = 'none';
 
-    // if the participants list is empty
-    } catch (error) {
-        console.error('Error fetching participants:', error);
-        return []; 
+    if (participants.length === 0) {
+      listEl.innerHTML = '<p class="text-muted">No one has signed up yet.</p>';
+    } else {
+      const ul = document.createElement('ul');
+      ul.className = 'list-group';
+      participants.forEach(p => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        // show the time, name, and email
+        li.textContent = 
+          `${new Date(p.start_time).toLocaleString()} – ${p.name}` +
+          (p.email ? ` (${p.email})` : '');
+        ul.appendChild(li);
+      });
+      listEl.appendChild(ul);
     }
+  } catch (err) {
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'block';
+  }
 }
